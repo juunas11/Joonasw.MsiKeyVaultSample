@@ -98,7 +98,9 @@
           }
         ]
       },
-      "dependsOn": []
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('resourceNameCompact'))]"
+      ]
     },
     {
       "type": "Microsoft.Web/sites/config",
@@ -147,7 +149,84 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "KeyVault--Url": "[concat('https://', variables('resourceNameCompact'), '.vault.azure.net/')]"
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('resourceNameCompact'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2016-08-01",
+      "name": "[concat(variables('resourceNameCompact'), '/slotConfigNames')]",
+      "tags": {
+        "displayName": "Slot setting config"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "appSettingNames": [
+          "KeyVault--Url"
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/config', variables('resourceNameCompact'), 'appsettings')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/slots",
+      "apiVersion": "2016-08-01",
+      "name": "[concat(variables('resourceNameCompact'), '/staging')]",
+      "tags": {
+        "displayName": "Web App Staging slot"
+      },
+      "kind": "app",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('resourceNameFull'))]"
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('resourceNameCompact'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('resourceNameFull'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/slots/config",
+      "apiVersion": "2016-08-01",
+      "name": "[concat(variables('resourceNameCompact'), '/staging', '/web')]",
+      "tags": {
+        "displayName": "Web App Staging slot config"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v4.7",
+        "use32BitWorkerProcess": true,
+        "alwaysOn": false,
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false
+          }
+        ],
+        "loadBalancing": "LeastRequests"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/slots', variables('resourceNameCompact'), 'staging')]"
+      ]
     }
   ],
   "outputs": {}
