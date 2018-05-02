@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2043
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Joonasw.MsiKeyVaultSample.ARM", "Joonasw.MsiKeyVaultSample.ARM\Joonasw.MsiKeyVaultSample.ARM.deployproj", "{595E8932-1C9A-4051-8C21-875F1C81C350}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Joonasw.MsiKeyVaultSample", "Joonasw.MsiKeyVaultSample\Joonasw.MsiKeyVaultSample.csproj", "{DCE866F4-6DDC-47E3-B43F-3F46E27F76B7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{595E8932-1C9A-4051-8C21-875F1C81C350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{595E8932-1C9A-4051-8C21-875F1C81C350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{595E8932-1C9A-4051-8C21-875F1C81C350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{595E8932-1C9A-4051-8C21-875F1C81C350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCE866F4-6DDC-47E3-B43F-3F46E27F76B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE866F4-6DDC-47E3-B43F-3F46E27F76B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE866F4-6DDC-47E3-B43F-3F46E27F76B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE866F4-6DDC-47E3-B43F-3F46E27F76B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BCF787F7-A251-4857-9BBD-186E835007FA}
+	EndGlobalSection
+EndGlobal

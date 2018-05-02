@@ -1,0 +1,154 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultManagingPrincipalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object id of the user or group which can manage secrets in the Key Vault"
+      }
+    }
+  },
+  "variables": {
+    "resourceNameFull": "[replace(resourceGroup().name, 'rg-', '')]",
+    "resourceNameCompact": "[replace(variables('resourceNameFull'), '-', '')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2016-09-01",
+      "tags": {
+        "displayName": "App Service Plan"
+      },
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
+      },
+      "kind": "app",
+      "name": "[variables('resourceNameFull')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2016-08-01",
+      "name": "[variables('resourceNameCompact')]",
+      "tags": {
+        "displayName": "Web App"
+      },
+      "kind": "app",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('resourceNameFull'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('resourceNameFull'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2016-10-01",
+      "name": "[variables('resourceNameCompact')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Configuration KeyVault"
+      },
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[parameters('keyVaultManagingPrincipalId')]",
+            "permissions": {
+              "keys": [],
+              "secrets": [
+                "get",
+                "list",
+                "set",
+                "delete",
+                "recover",
+                "backup",
+                "restore"
+              ],
+              "certificates": []
+            }
+          },
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('resourceNameCompact')), '2016-08-01', 'Full').identity.principalId]",
+            "permissions": {
+              "secrets": [
+                "get",
+                "list"
+              ]
+            }
+          }
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2016-08-01",
+      "name": "[concat(variables('resourceNameCompact'), '/web')]",
+      "tags": {
+        "displayName": "Web App config"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v4.7",
+        "use32BitWorkerProcess": true,
+        "alwaysOn": false,
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false
+          }
+        ],
+        "loadBalancing": "LeastRequests"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('resourceNameCompact'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2016-08-01",
+      "name": "[concat(variables('resourceNameCompact'), '/appsettings')]",
+      "tags": {
+        "displayName": "App settings"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "KeyVault--Url": "[concat('https://', variables('resourceNameCompact'), '.vault.azure.net/')]"
+      }
+    }
+  ],
+  "outputs": {}
+}
