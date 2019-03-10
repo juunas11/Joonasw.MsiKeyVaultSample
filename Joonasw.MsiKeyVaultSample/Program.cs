@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
-using Microsoft.Extensions.Logging;
 
 namespace Joonasw.MsiKeyVaultSample
 {
@@ -17,10 +11,10 @@ namespace Joonasw.MsiKeyVaultSample
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((ctx, builder) =>
@@ -39,7 +33,6 @@ namespace Joonasw.MsiKeyVaultSample
                         //Add Key Vault to configuration pipeline
                         builder.AddAzureKeyVault(config["KeyVault:Url"], kvClient, new DefaultKeyVaultSecretManager());
                     }
-                })
-                .Build();
+                });
     }
 }
